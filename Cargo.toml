@@ -1,0 +1,8 @@
+[package]
+name = "fnbr-jitter"
+version = "0.1.0"
+edition = "2021"
+description = "Detector de canales encubiertos de temporización (jitter) en tráfico saliente"
+license = "MIT"
+
+[dependencies]
