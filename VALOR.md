@@ -23,24 +23,40 @@ distribución de retardos de la línea base. La comparación conceptual es
 
 - Generadores sintéticos reproducibles en `src/gen.rs` (`benign`, `covert`, `mimic`).
 - Evaluación: `cargo run --release --example eval_valor`.
-- Por celda: 1000 pares, ventana = 400 intervalos, línea base = 5000, semillas fijas.
+- Por celda: 1000 pares, ventana = 400 intervalos, línea base = 5000; 5 semillas maestras (1..5).
 - Alphas: {0,001 · 0,01 · 0,05}.
-- Salida cruda: `collector/evidence/eval_valor.txt` (gitignorado bajo `collector/runs/`,
-  este archivo sí se versiona).
+- Salida cruda: `collector/evidence/eval_valor_semillas.txt` (versionada; solo
+  `collector/runs/` está gitignorado).
 
-## Resultados (sintético, 21/10/2026)
+## Resultados (sintético, 5 semillas, 21/10/2026)
 
-| alpha | FPR    | TPR_naive | TPR_mimic |
-|------:|-------:|----------:|----------:|
-| 0,001 | 0,0010 |    1,0000 |    0,0000 |
-| 0,010 | 0,0070 |    1,0000 |    0,0120 |
-| 0,050 | 0,0360 |    1,0000 |    0,0580 |
+Una semilla fija prueba reproducibilidad, no robustez. Por eso la evaluación
+corre ahora 5 semillas maestras (1..5), cada una con su propia línea base y sus
+1000 pares por celda (WIN = 400, base = 5000). Rango min–max y media:
 
-Reproducir:
+| alpha | FPR                    | TPR_naive              | TPR_mimic              |
+|------:|:-----------------------|:-----------------------|:-----------------------|
+| 0,001 | 0,0000–0,0020 (0,0008) | 1,0000–1,0000 (1,0000) | 0,0000–0,0030 (0,0012) |
+| 0,010 | 0,0060–0,0150 (0,0106) | 1,0000–1,0000 (1,0000) | 0,0040–0,0120 (0,0078) |
+| 0,050 | 0,0310–0,0510 (0,0398) | 1,0000–1,0000 (1,0000) | 0,0430–0,0590 (0,0498) |
+
+- **TPR_naive = 1 en las 5 semillas** y en los tres alphas.
+- **TPR_mimic queda pegado al FPR en todas**: los rangos de TPR_mimic y FPR se
+  superponen en cada alpha, y las dos medias quedan cerca del alpha nominal.
+  El detector no distingue al imitador en ninguna semilla.
+
+Salida cruda por semilla: `collector/evidence/eval_valor_semillas.txt`.
+
+Reproducir (por defecto semillas 1..5; también `SEMILLAS="7 8"` o argumentos):
 
 ```bash
 cargo run --release --example eval_valor
+cargo run --release --example eval_valor -- 1 2 3
 ```
+
+La corrida anterior, con una sola semilla fija (commit `d9fe2cb`), queda en
+`collector/evidence/eval_valor.txt`. Usaba otro esquema de semillas, así que
+sus números no coinciden con los de esta tabla, pero las conclusiones son las mismas.
 
 ## Interpretación honesta
 
@@ -55,6 +71,7 @@ cargo run --release --example eval_valor
   no los ve.
 - Veredicto de una frase: **el detector retiene valor contra el canal 1 ms/4 ms;
   contra un adversario que imita la distribución, el valor colapsa a ~FPR.**
+  Se sostiene en las 5 semillas.
 
 ## Captura real con uprobe (complementaria)
 
@@ -67,7 +84,7 @@ Además del sintético, corrí una captura corta con bpftrace sobre TLS local
 
 Veredicto: **no sospechoso** a alpha = 0,001 (p ≈ 0,44). Coincide con el
 sintético. Evidencia: `collector/evidence/captura_mimic.txt`. El sintético
-(1000 pares/celda) sigue siendo la evidencia principal de tasas; la captura
+(5 semillas × 1000 pares/celda) sigue siendo la evidencia principal de tasas; la captura
 real confirma que el uprobe no cambia el veredicto.
 
 ## Qué haría falta para valor C real
