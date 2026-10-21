@@ -11,7 +11,7 @@ Dueña: Federica Research Sentinel. Pedido de Federico, 20/10/2026.
 
 ## Estado verificado
 - `cargo build --release` + `cargo clippy -- -D warnings`: limpios.
-- `cargo test --release`: 5/5 (sintético: FPR 0,2 %, TPR 100 %).
+- `cargo test --release`: 7/7 (sintético: FPR≈alpha, TPR_naive=100 %, TPR_mimic≈FPR).
 - **Captura real con uprobe** (`scripts/captura-real.sh`, 20/10/2026):
   - 500 + 400 + 400 llamadas a `SSL_write` capturadas en `libssl.so.3`.
   - Benigno vs línea base: `suspicious=false` → sin falsa alarma.
@@ -24,9 +24,18 @@ Dueña: Federica Research Sentinel. Pedido de Federico, 20/10/2026.
 
 ## Lo que NO está verificado
 - Tráfico de red real hacia Internet (la prueba usa TLS local).
-- Adversario que imite la distribución de la línea base (límite del KS).
+- ~~Adversario que imite la distribución~~ → medido en VALOR.md: el KS no lo distingue.
 - `libcrypto` por separado; hoy solo `libssl` write path.
 - MCP/gRPC sobre stdio no pasa por SSL: este detector no los ve.
+
+
+## Experimento de valor (adversario imitador)
+
+Ver **[VALOR.md](VALOR.md)**: métrica TPR@FPR fijo contra un adversario que imita
+la distribución de la línea base (`mimic`), comparado con el canal ingenuo 1 ms/4 ms
+y con «sin detector». Resultado: el KS retiene valor contra el ingenuo
+(`TPR_naive = 1`); contra el imitador el valor **colapsa** (`TPR_mimic ≈ FPR`).
+Reproducir: `cargo run --release --example eval_valor`.
 
 ## Cómo reproducir
 ```bash

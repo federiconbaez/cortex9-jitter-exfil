@@ -1,0 +1,4 @@
+# Captura real mimic (uprobe SSL_write)
+# fecha: 2026-10-21T00:00:36-03:00 (America/Buenos_Aires)
+{"d":0.070234,"p_value":4.387e-1,"suspicious":false}
+detector_exit=0

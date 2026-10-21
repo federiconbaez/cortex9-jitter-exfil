@@ -1,0 +1,11 @@
+# Evaluacion de valor — detector 06 (jitter/KS)
+# TRIALS=1000 pares/celda, WIN=400, base_n=5000, mediana=2ms, sigma=0.6
+# benigno: lognormal(mediana 2ms, sigma 0.6)
+# encubierto (ingenuo): bits 1ms/4ms + ruido sigma 0.15
+# imitador (mimic): bits por mitad de la CDF lognormal, marginal identico
+
+   alpha         FPR     TPR_naive     TPR_mimic
+--------  ----------  ------------  ------------
+   0.001      0.0010        1.0000        0.0000
+   0.010      0.0070        1.0000        0.0120
+   0.050      0.0360        1.0000        0.0580
