@@ -53,7 +53,13 @@ if len(cands) < 3:
     raise SystemExit(f"faltan capturas: solo {len(cands)} procesos con >=50 writes")
 PY
 
+# El detector devuelve !=0 cuando marca sospechoso; eso es un RESULTADO, no un fallo
+# del script, as\u00ed que capturamos el c\u00f3digo sin que set -e aborte.
 echo "=== FPR (benign vs baseline) ==="
-"$BIN" collector/runs/baseline.txt collector/runs/benign_obs.txt 0.001; echo "exit=$?"
+rc_fpr=0; "$BIN" collector/runs/baseline.txt collector/runs/benign_obs.txt 0.001 || rc_fpr=$?
+echo "detector_fpr_exit=$rc_fpr (0 = no sospechoso, esperado)"
 echo "=== TPR (covert vs baseline) ==="
-"$BIN" collector/runs/baseline.txt collector/runs/covert.txt 0.001; echo "exit=$?"
+rc_tpr=0; "$BIN" collector/runs/baseline.txt collector/runs/covert.txt 0.001 || rc_tpr=$?
+echo "detector_tpr_exit=$rc_tpr (!=0 = canal detectado, esperado)"
+# El script termina OK si corri\u00f3 bien, con independencia del veredicto del detector.
+exit 0

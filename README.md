@@ -14,8 +14,13 @@ Dueña: Federica Research Sentinel. Pedido de Federico, 20/10/2026.
 - `cargo test --release`: 5/5 (sintético: FPR 0,2 %, TPR 100 %).
 - **Captura real con uprobe** (`scripts/captura-real.sh`, 20/10/2026):
   - 500 + 400 + 400 llamadas a `SSL_write` capturadas en `libssl.so.3`.
-  - Benigno vs línea base: `suspicious=false` (p ≈ 3,6e-2) → sin falsa alarma.
-  - Canal encubierto 1 ms/4 ms vs línea base: `suspicious=true` (p ≈ 2,8e-18).
+  - Benigno vs línea base: `suspicious=false` → sin falsa alarma.
+  - Canal encubierto 1 ms/4 ms vs línea base: `suspicious=true`.
+  - Los valores-p varían entre corridas (muestras y PIDs distintos). En mediciones
+    independientes el benigno dio p ≈ 1,6e-2 … 1,9e-1 (siempre por encima del umbral,
+    no sospechoso) y el canal encubierto p ≈ 10⁻¹⁵ … 10⁻¹⁸ (siempre muy por debajo).
+    Lo estable es el **veredicto**, no el p exacto; para reproducir, correr el script,
+    no copiar un número.
 
 ## Lo que NO está verificado
 - Tráfico de red real hacia Internet (la prueba usa TLS local).
