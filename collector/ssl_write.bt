@@ -1,0 +1,9 @@
+/* Captura marcas de tiempo (ns) de SSL_write / SSL_write_ex por PID.
+ * Uso: sudo bpftrace -o marcas.tsv collector/ssl_write.bt
+ * Formato: ts_ns\tpid\tcomm\tnbytes
+ */
+uprobe:/usr/lib/x86_64-linux-gnu/libssl.so.3:SSL_write,
+uprobe:/usr/lib/x86_64-linux-gnu/libssl.so.3:SSL_write_ex
+{
+  printf("%llu\t%d\t%s\t%d\n", nsecs, pid, comm, arg2);
+}
