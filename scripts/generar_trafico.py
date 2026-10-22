@@ -8,11 +8,20 @@ Modos:
             la mitad izquierda/derecha de la CDF lognormal. La distribución
             marginal es idéntica a la benigna; el KS no puede distinguirlo.
 """
-import argparse, math, random, socket, ssl, threading, time
+import argparse, math, os, random, socket, ssl, subprocess, threading, time
+
+
+def asegurar_cert():
+    """Genera un par autofirmado de prueba si no existe (no se versiona)."""
+    if not (os.path.exists("collector/cert.pem") and os.path.exists("collector/key.pem")):
+        subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "30",
+                        "-subj", "/CN=localhost", "-keyout", "collector/key.pem",
+                        "-out", "collector/cert.pem"], check=True, capture_output=True)
 
 
 def server(port, stop):
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    asegurar_cert()
     ctx.load_cert_chain("collector/cert.pem", "collector/key.pem")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
