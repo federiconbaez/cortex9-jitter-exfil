@@ -1,5 +1,11 @@
 # 06 — Detector de exfiltración por jitter
 
+> **ES:** Detector de exfiltración por canal encubierto de tiempos (jitter) en escrituras SSL. Compilar/probar: `cargo build --release && cargo test --release`. El certificado TLS de prueba se genera solo al correr `scripts/generar_trafico.py` (no se versiona).
+> **EN:** Detector for timing-jitter covert-channel exfiltration over SSL writes. Build/test: `cargo build --release && cargo test --release`. The test TLS cert is generated at run time by `scripts/generar_trafico.py` (not versioned).
+>
+> **Estado / Status:** resultados en VALOR.md; **no auditado** por un tercero / **not independently audited**. Licencia / License: Apache-2.0.
+
+
 Dueña: Federica Research Sentinel. Pedido de Federico, 20/10/2026.
 
 ## Qué hace (v0.2)
